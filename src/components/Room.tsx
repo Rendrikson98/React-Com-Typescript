@@ -1,23 +1,44 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import axios from 'axios';
 
-type Props = {
+type Props = {};
 
+interface RoomModel{
+    name: string;
 }
 
 const Room = (props: Props)=>{
-    let rooms: any[] = [];
-    axios.get('http://localhost:3000/rooms')
-    .then(response => {
-        rooms = response.data;
-    });
+    const [rooms, setRooms] = useState<RoomModel[]>([{name: "Rendrikson"}]);
+
+    useEffect(()=>{
+        axios.get('http://localhost:3000/rooms')
+        .then(response => {
+            //rooms = response.data;
+            setRooms(response.data);
+        });
+
+        (async () => {
+            try {
+                const response = await axios.get('http://localhost:3000/rooms');
+                setRooms(response.data);
+            } catch (error) {
+               console.log(error);
+            }
+        })();
+    }, [])
+
+    function cliclou(event: any){
+        console.log(event)
+    }
+    
     console.log(rooms);
     return(
         <div>
             <h1>Salas</h1>
             <ul>
-                <li>Sala 1</li>
-                <li>Sala 2</li>
+                {rooms.map((room, index)=>(
+                    <li onClick={(event) => cliclou(event)} key={index}>{room.name}</li>
+                ))}
             </ul>
         </div>
     )
